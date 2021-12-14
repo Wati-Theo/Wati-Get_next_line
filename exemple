@@ -8,6 +8,6 @@ int main()
 }
 
 ""
-"int main()"
+"int main()"  // if BUFFER_SIZE = 22 or plus
 "{"
 "	while (1)"
