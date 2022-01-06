@@ -6,13 +6,46 @@
 /*   By: tschlege <tschlege@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:11:23 by tschlege          #+#    #+#             */
-/*   Updated: 2022/01/06 17:11:30 by tschlege         ###   ########lyon.fr   */
+/*   Updated: 2022/01/06 18:06:29 by tschlege         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
 #include <stdio.h>
+
+void	*ft_memset(void *b, int c, size_t len)
+{
+	void	*retturn;
+
+	retturn = b;
+	while (len)
+	{
+		len--;
+		*((unsigned char *)b + len) = (unsigned char)c;
+	}
+	return (retturn);
+}
+
+void	*ft_calloc(size_t count, size_t size)
+{
+	void	*retturn;
+
+	retturn = malloc(count * size);
+	if (!retturn)
+		return (NULL);
+	return (ft_memset(retturn, '\0', count * size));
+}
+
+size_t	ft_strlen(const	char *s)
+{
+	int	i;
+
+	i = 0;
+	while (s[i])
+		i++;
+	return (i);
+}
 
 int	where_are_you(char *str)
 {
@@ -97,39 +130,48 @@ char	*ft_strjoin(char const *s1, char const *s2)
 char	*get_next_line(int fd)
 {
 	static char	buf[BUFFER_SIZE];
-	char		*first;
-	int			offset;
 	char		*res;
-
+	char		*tmp;
 	
-	first = NULL;
-	offset = 0;
 	if (read(fd, buf, BUFFER_SIZE) <= 0) // si read < 1
 		return (NULL);
-	if (where_are_you(buf)) // si '/n' dans buf[BUFFER_SIZE]
+	if (where_are_you(buf) >= 0) // si '/n' dans buf[BUFFER_SIZE]
 		return (ft_strndup(buf, where_are_you(buf)));
 	else // si pas de '\n'
 	{
-		first = ft_strdup(buf);
+		res = ft_strdup(buf);
 		while (where_are_you(buf) == -1)
 		{
 			if (read(fd, buf, BUFFER_SIZE) <= 0) // si read < 1
 				return (NULL);
-			if (!offset)
-				res = ft_strjoin(first, buf);
-			else
+			if (where_are_you(buf) == -1) // check si dans le nouveau code on a /n
+			{
+				tmp = res;
 				res = ft_strjoin(res, buf);
-			offset++;
+				free(tmp);
+			}	
 		}
-		
+		tmp = res;
+		buf[where_are_you(buf)] = 0; // ca c'est stylé
+		res = ft_strjoin(res, buf);
+		free(tmp);
+		return (res);
 	}
-		
 }
 
 int	main(void)
 {
 	int	fd;
-
+	char	*get_free;
+	
 	fd = open("mamamia", O_RDONLY);
-	printf("$%s$\n", get_next_line(fd));
+	get_free = get_next_line(fd);
+	printf("$%s$\n", get_free);
+	free(get_free);
+	get_free = get_next_line(fd);
+	printf("$%s$\n", get_free);
+	free(get_free);
+	get_free = get_next_line(fd);
+	printf("$%s$\n", get_free);
+	free(get_free);
 }
