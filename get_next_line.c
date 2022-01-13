@@ -6,7 +6,7 @@
 /*   By: tschlege <tschlege@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:11:23 by tschlege          #+#    #+#             */
-/*   Updated: 2022/01/11 14:25:28 by tschlege         ###   ########lyon.fr   */
+/*   Updated: 2022/01/12 17:19:44 by tschlege         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,6 @@ void	get_back(char *buf, char *cpy)
 	int	i;
 	
 	i = 0;
-	// printf("%s | %s\n", buf, cpy);
 	while (cpy[i])
 	{
 		buf[i] = cpy[i];
@@ -149,7 +148,7 @@ char	*get_next_line(int fd)
 	int			check;
 
 	buf[BUFFER_SIZE] = 0;
-	if (!(*buf) && read(fd, buf, BUFFER_SIZE) <= 0) // si read < 1
+	if (!(*buf) && read(fd, buf, BUFFER_SIZE) <= 0) // read seulement au premier appel de read
 		return (NULL);
 	if (where_are_you(buf) >= 0) // si '/n' dans buf[BUFFER_SIZE]
 		return (ft_strndup(buf, where_are_you(buf)));
@@ -160,7 +159,7 @@ char	*get_next_line(int fd)
 		{
 			if (read(fd, buf, BUFFER_SIZE) <= 0) // si read < 1
 				return (NULL);
-			if (where_are_you(buf) == -1) // check si dans le nouveau code on a /n
+			if (where_are_you(buf) == -1) // check si dans le nouveau code on a \n
 			{
 				tmp = res;
 				res = ft_strjoin(res, buf);
@@ -169,7 +168,7 @@ char	*get_next_line(int fd)
 		}
 		tmp = res;
 		check = where_are_you(buf);
-		buf[where_are_you(buf)] = 0; // ca c'est stylé
+		buf[where_are_you(buf)] = 0; // remplace le \n  par un \0
 		res = ft_strjoin(res, buf);
 		free(tmp);
 		if (buf[check + 1])
