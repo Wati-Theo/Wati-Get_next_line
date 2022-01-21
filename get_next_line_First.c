@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_First.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tschlege <tschlege@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/20 15:46:55 by tschlege          #+#    #+#             */
-/*   Updated: 2022/01/21 20:29:08 by tschlege         ###   ########lyon.fr   */
+/*   Created: 2021/12/08 16:11:23 by tschlege          #+#    #+#             */
+/*   Updated: 2022/01/20 20:52:38 by tschlege         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,16 +127,6 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (the_nouvelle);
 }
 
-void	fake_NULL(char *buf, int size)
-{
-	size -= 1;
-	while (size + 1)
-	{
-		buf[size] = 0;
-		size--;
-	}
-}
-
 void	get_back(char *buf, char *cpy)
 {
 	int	i;
@@ -157,12 +147,15 @@ char	*get_next_line(int fd)
 	char		*tmp;
 	int			check;
 
-	if (*buf)
+	buf[BUFFER_SIZE] = 0;
+	if (!(*buf) && read(fd, buf, BUFFER_SIZE) <= 0) // read seulement au premier appel de read
+		return (NULL);
+	if (where_are_you(buf) >= 0) // si '/n' dans buf[BUFFER_SIZE]
+		return (ft_strndup(buf, where_are_you(buf)));
+	else // si pas de '\n'
 	{
-		if (where_are_you(buf) > 0) // trouve un \n
-			return (ft_strndup(buf, where_are_you(buf))); // renvoi la ligne
-		res =  ft_strdup(buf); // stock le buf deja lu dans res
-		while (where_are_you(buf) == -1) // while no \n
+		res = ft_strdup(buf);
+		while (where_are_you(buf) == -1) // tant qu'il n'y a pas de \n
 		{
 			if (read(fd, buf, BUFFER_SIZE) <= 0) // si read < 1
 				return (NULL);
@@ -173,18 +166,15 @@ char	*get_next_line(int fd)
 				free(tmp);
 			}
 		}
-		check = where_are_you(buf);
-		buf[check] = 0;
 		tmp = res;
+		check = where_are_you(buf);
+		buf[where_are_you(buf)] = 0; // remplace le \n  par un \0
 		res = ft_strjoin(res, buf);
 		free(tmp);
-		if (check == BUFFER_SIZE)
-			fake_NULL(buf, BUFFER_SIZE);
-		else
+		if (buf[check + 1])
 			get_back(buf, ft_strdup(buf + check + 1));
 		return (res);
 	}
-	
 }
 
 int	main(void)
