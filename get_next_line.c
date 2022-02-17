@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tschlege <tschlege@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: Wati-Theo <wati-theo@protonmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/20 15:46:55 by tschlege          #+#    #+#             */
-/*   Updated: 2022/01/21 20:29:08 by tschlege         ###   ########lyon.fr   */
+/*   Created: 2021/12/08 16:11:23 by tschlege          #+#    #+#             */
+/*   Updated: 2022/02/17 21:32:16 by Wati-Theo        ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,27 +127,24 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (the_nouvelle);
 }
 
-void	fake_NULL(char *buf, int size)
-{
-	size -= 1;
-	while (size + 1)
-	{
-		buf[size] = 0;
-		size--;
-	}
-}
-
-void	get_back(char *buf, char *cpy)
+void	get_back(char *buf)
 {
 	int	i;
+	int	j;
 	
 	i = 0;
-	while (cpy[i])
-	{
-		buf[i] = cpy[i];
+	j = 0;
+	while (buf[i])
 		i++;
+	i++;
+	while (buf[i])
+	{
+		buf[j] = buf[i];
+		i++;
+		j++;
 	}
-	free (cpy);
+	buf[j] = 0;
+	
 }
 
 char	*get_next_line(int fd)
@@ -155,41 +152,33 @@ char	*get_next_line(int fd)
 	static char	buf[BUFFER_SIZE + 1];
 	char		*res;
 	char		*tmp;
-	int			check;
 
-	if (*buf)
+	buf[BUFFER_SIZE] = 0;
+	res = ft_strdup(buf);
+	while (where_are_you(buf) == -1) // tant qu'il trouve pas de \n
 	{
-		if (where_are_you(buf) > 0) // trouve un \n
-			return (ft_strndup(buf, where_are_you(buf))); // renvoi la ligne
-		res =  ft_strdup(buf); // stock le buf deja lu dans res
-		while (where_are_you(buf) == -1) // while no \n
+		// printf("buf = $%s$\n", buf);
+		if (read(fd, buf, BUFFER_SIZE) == 0) // si read == 0
+			return (res);
+		if (where_are_you(buf) == -1) // check si dans le nouveau txt lu on a un \n
 		{
-			if (read(fd, buf, BUFFER_SIZE) <= 0) // si read < 1
-				return (NULL);
-			if (where_are_you(buf) == -1) // check si dans le nouveau code on a \n
-			{
-				tmp = res;
-				res = ft_strjoin(res, buf);
-				free(tmp);
-			}
+			tmp = res;
+			res = ft_strjoin(res, buf); // strjoin le texte lu
+			free(tmp);
 		}
-		check = where_are_you(buf);
-		buf[check] = 0;
-		tmp = res;
-		res = ft_strjoin(res, buf);
-		free(tmp);
-		if (check == BUFFER_SIZE)
-			fake_NULL(buf, BUFFER_SIZE);
-		else
-			get_back(buf, ft_strdup(buf + check + 1));
-		return (res);
 	}
-	
+	tmp = res;
+	buf[where_are_you(buf)] = 0; // remplace le \n par un 0
+	res = ft_strjoin(res, buf); // dernier strjoin
+	free(tmp);
+	if (buf[where_are_you(buf) + 1])
+		get_back(buf);
+	return (res);
 }
 
 int	main(void)
 {
-	int	fd;
+	int		fd;
 	char	*get_free;
 	
 	fd = open("mamamia", O_RDONLY);
@@ -202,4 +191,21 @@ int	main(void)
 	get_free = get_next_line(fd);
 	printf("$%s$\n", get_free);
 	free(get_free);
+
+	// char	buf[10];
+
+	// buf[0] = 'W';	
+	// buf[1] = 'a';
+	// buf[2] = 't';
+	// buf[3] = 'i';
+	// buf[4] = 0;
+	// buf[5] = 'T';
+	// buf[6] = 'h';
+	// buf[7] = 'e';
+	// buf[8] = 'o';
+	// buf[9] = 0;
+
+	// printf("%s\n", buf);
+	// get_back(buf);
+	// printf("%s\n", buf);
 }
