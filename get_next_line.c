@@ -6,7 +6,7 @@
 /*   By: tschlege <tschlege@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:11:23 by tschlege          #+#    #+#             */
-/*   Updated: 2022/02/18 12:27:56 by tschlege         ###   ########lyon.fr   */
+/*   Updated: 2022/02/18 12:56:52 by tschlege         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,6 +127,18 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (the_nouvelle);
 }
 
+void get_zeroed(char *buf)
+{
+	int	i;
+
+	i = 0;
+	while (buf[i])
+	{
+		buf[i] = 0;
+		i++;
+	}
+}
+
 void	get_back(char *buf)
 {
 	int	i;
@@ -183,6 +195,8 @@ char	*get_next_line(int fd)
 		get_back(buf);
 		printf("get_back buf -> $%s$\n", buf);
 	}
+	else
+		get_zeroed(buf);
 	return (res);
 }
 
@@ -193,13 +207,13 @@ int	main(void)
 	
 	fd = open("mamamia", O_RDONLY);
 	get_free = get_next_line(fd);
-	printf("res = $%s$\n", get_free);
+	printf("\nres = $%s$\n", get_free);
 	free(get_free);
 	get_free = get_next_line(fd);
-	printf("res = $%s$\n", get_free);
+	printf("\nres = $%s$\n", get_free);
 	free(get_free);
 	get_free = get_next_line(fd);
-	printf("res = $%s$\n", get_free);
+	printf("\nres = $%s$\n", get_free);
 	free(get_free);
 
 	// char	buf[10];
