@@ -6,7 +6,7 @@
 /*   By: tschlege <tschlege@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:11:23 by tschlege          #+#    #+#             */
-/*   Updated: 2022/02/18 12:56:52 by tschlege         ###   ########lyon.fr   */
+/*   Updated: 2022/02/18 13:07:32 by tschlege         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,7 +173,7 @@ char	*get_next_line(int fd)
 	{
 		if (read(fd, buf, BUFFER_SIZE) == 0) // si read == 0
 		{
-			printf("EOL\n");
+			printf("EOF\n");
 			return (res);
 		}	
 		printf("je lis $%s$\n", buf);
@@ -188,6 +188,7 @@ char	*get_next_line(int fd)
 	tmp = res;
 	index = where_are_you(buf);
 	buf[index] = 0; // remplace le \n par un 0
+	printf("buf without first /n $%s$\n", buf);
 	res = ft_strjoin(res, buf); // dernier strjoin
 	free(tmp);
 	if (buf[index + 1])
