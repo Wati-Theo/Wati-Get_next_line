@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Wati-Theo <wati-theo@protonmail.com>       +#+  +:+       +#+        */
+/*   By: tschlege <tschlege@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:11:23 by tschlege          #+#    #+#             */
-/*   Updated: 2022/02/17 21:32:16 by Wati-Theo        ###   ########lyon.fr   */
+/*   Updated: 2022/02/18 12:12:38 by tschlege         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,16 +153,21 @@ char	*get_next_line(int fd)
 	char		*res;
 	char		*tmp;
 
+	printf("\n\n");
 	buf[BUFFER_SIZE] = 0;
 	res = ft_strdup(buf);
 	while (where_are_you(buf) == -1) // tant qu'il trouve pas de \n
 	{
-		// printf("buf = $%s$\n", buf);
 		if (read(fd, buf, BUFFER_SIZE) == 0) // si read == 0
+		{
+			printf("EOL\n");
 			return (res);
+		}	
+		printf("je lis $%s$\n", buf);
 		if (where_are_you(buf) == -1) // check si dans le nouveau txt lu on a un \n
 		{
 			tmp = res;
+			printf("strjoin de $%s$ et $%s$\n", res, buf);
 			res = ft_strjoin(res, buf); // strjoin le texte lu
 			free(tmp);
 		}
@@ -172,7 +177,10 @@ char	*get_next_line(int fd)
 	res = ft_strjoin(res, buf); // dernier strjoin
 	free(tmp);
 	if (buf[where_are_you(buf) + 1])
+	{
 		get_back(buf);
+		printf("get_back buf -> $%s$\n", buf);
+	}
 	return (res);
 }
 
@@ -183,13 +191,13 @@ int	main(void)
 	
 	fd = open("mamamia", O_RDONLY);
 	get_free = get_next_line(fd);
-	printf("$%s$\n", get_free);
+	printf("res = $%s$\n", get_free);
 	free(get_free);
 	get_free = get_next_line(fd);
-	printf("$%s$\n", get_free);
+	printf("res = $%s$\n", get_free);
 	free(get_free);
 	get_free = get_next_line(fd);
-	printf("$%s$\n", get_free);
+	printf("res = $%s$\n", get_free);
 	free(get_free);
 
 	// char	buf[10];
