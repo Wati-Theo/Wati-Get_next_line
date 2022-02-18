@@ -6,7 +6,7 @@
 /*   By: tschlege <tschlege@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:11:23 by tschlege          #+#    #+#             */
-/*   Updated: 2022/02/18 12:12:38 by tschlege         ###   ########lyon.fr   */
+/*   Updated: 2022/02/18 12:27:56 by tschlege         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,6 +152,7 @@ char	*get_next_line(int fd)
 	static char	buf[BUFFER_SIZE + 1];
 	char		*res;
 	char		*tmp;
+	int			index;
 
 	printf("\n\n");
 	buf[BUFFER_SIZE] = 0;
@@ -173,10 +174,11 @@ char	*get_next_line(int fd)
 		}
 	}
 	tmp = res;
-	buf[where_are_you(buf)] = 0; // remplace le \n par un 0
+	index = where_are_you(buf);
+	buf[index] = 0; // remplace le \n par un 0
 	res = ft_strjoin(res, buf); // dernier strjoin
 	free(tmp);
-	if (buf[where_are_you(buf) + 1])
+	if (buf[index + 1])
 	{
 		get_back(buf);
 		printf("get_back buf -> $%s$\n", buf);
