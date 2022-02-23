@@ -6,7 +6,7 @@
 /*   By: tschlege <tschlege@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:11:23 by tschlege          #+#    #+#             */
-/*   Updated: 2022/02/18 13:07:32 by tschlege         ###   ########lyon.fr   */
+/*   Updated: 2022/02/23 18:10:52 by tschlege         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,22 +165,29 @@ char	*get_next_line(int fd)
 	char		*res;
 	char		*tmp;
 	int			index;
+	int			o;
 
 	printf("\n\n");
 	buf[BUFFER_SIZE] = 0;
 	res = ft_strdup(buf);
 	while (where_are_you(buf) == -1) // tant qu'il trouve pas de \n
 	{
-		if (read(fd, buf, BUFFER_SIZE) == 0) // si read == 0
+		index = 696;
+		o = read(fd, buf, BUFFER_SIZE);
+		if (o == 0) // si read == 0
 		{
+			buf[o] = 0;
 			printf("EOF\n");
 			return (res);
-		}	
+		}
+		else if (o <= 0) // si read error
+			return (NULL);
+		buf[o] = 0;
 		printf("je lis $%s$\n", buf);
 		if (where_are_you(buf) == -1) // check si dans le nouveau txt lu on a un \n
 		{
 			tmp = res;
-			printf("strjoin de $%s$ et $%s$\n", res, buf);
+			printf("strjoin1 de $%s$ et $%s$\n", res, buf);
 			res = ft_strjoin(res, buf); // strjoin le texte lu
 			free(tmp);
 		}
@@ -189,6 +196,7 @@ char	*get_next_line(int fd)
 	index = where_are_you(buf);
 	buf[index] = 0; // remplace le \n par un 0
 	printf("buf without first /n $%s$\n", buf);
+	printf("strjoin2 de $%s$ et $%s$\n", res, buf);
 	res = ft_strjoin(res, buf); // dernier strjoin
 	free(tmp);
 	if (buf[index + 1])
