@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   before.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tschlege <tschlege@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:11:23 by tschlege          #+#    #+#             */
-/*   Updated: 2022/03/03 14:42:15 by tschlege         ###   ########lyon.fr   */
+/*   Updated: 2022/02/24 15:22:27 by tschlege         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,25 +161,58 @@ void	get_back(char *buf)
 
 char	*get_next_line(int fd)
 {
-	static char		buf[BUFFER_SIZE + 1];
-	int				r;
-	int				check;
-	char			*res;
-	
-	buf[BUFFER_SIZE]  = 0; // \0  a la fin du tab
-	if (!buf) // si le buf est vide
-		if (read(fd, buf, BUFFER_SIZE) <= 0) // si read a une erreur ou on ne lit rien
-			return (NULL);
-	if (where_are_you(buf)) // si il trouve directement le \n
+	static char	buf[BUFFER_SIZE + 1];
+	char		*res;
+	char		*tmp;
+	int			index;
+	int			o;
+
+	index = 1;
+	printf("\n\n");
+	buf[BUFFER_SIZE] = 0;
+	res = ft_strdup(buf);
+	while (where_are_you(buf) == -1) // tant qu'il trouve pas de \n
 	{
-		blocker(res);
-		if ya quelque chose apres le \n dans buf
-			get_back(buf);
-		else
-			get_zeroed(buf); // remplis le buf de \0 jsqu'a BUFFER_SIZE
-		return (res);
+		index = 696;
+		o = read(fd, buf, BUFFER_SIZE);
+		if (o == 0) // si read == 0
+		{
+			buf[o] = 0;
+			printf("EOF\n");
+			return (res);
+		}
+		else if (o <= 0) // si read error
+			return (NULL);
+		buf[o] = 0;
+		printf("je lis $%s$\n", buf);
+		if (where_are_you(buf) == -1) // check si dans le nouveau txt lu on a un \n
+		{
+			tmp = res; 
+			printf("strjoin1 de $%s$ et $%s$\n", res, buf);
+			res = ft_strjoin(res, buf); // strjoin le texte lu
+			free(tmp);
+		}
 	}
-	
+	tmp = res;
+	index = where_are_you(buf);
+	buf[index] = 0; // remplace le \n par un 0
+	printf("buf without first /n $%s$\n", buf);
+	if (index == 694)
+	{
+		printf("strjoin2 de $%s$ et $%s$\n", res, buf);
+		res = ft_strjoin(res, buf); // dernier strjoin	
+	}
+	else
+		res = ft_strdup(buf);
+	free(tmp);
+	if (buf[index + 1])
+	{
+		get_back(buf);
+		printf("get_back buf -> $%s$\n", buf);
+	}
+	else
+		get_zeroed(buf);
+	return (res);
 }
 
 int	main(void)
@@ -204,19 +237,14 @@ int	main(void)
 	// buf[1] = 'a';
 	// buf[2] = 't';
 	// buf[3] = 'i';
-	// buf[4] = '\n';
+	// buf[4] = 0;
 	// buf[5] = 'T';
 	// buf[6] = 'h';
 	// buf[7] = 'e';
 	// buf[8] = 'o';
 	// buf[9] = 0;
 
-	//printf("%s\n", buf);
+	// printf("%s\n", buf);
 	// get_back(buf);
 	// printf("%s\n", buf);
-
-	// char	*reste;
-	
-	// reste = ft_strdup(buf + 4);
-	// printf("$%s$\n", reste);
 }
