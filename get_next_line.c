@@ -6,7 +6,7 @@
 /*   By: Wati-Theo <wati-theo@protonmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:11:23 by tschlege          #+#    #+#             */
-/*   Updated: 2022/03/09 02:10:14 by Wati-Theo        ###   ########lyon.fr   */
+/*   Updated: 2022/03/09 23:02:29 by Wati-Theo        ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,11 @@ size_t	ft_strlen(const	char *s)
 	return (i);
 }
 
-int	where_are_you(char *str, int index)
+int	where_are_you(char *str)
 {
+	int index;
+
+	index = 0;
 	while (str[index])
 	{
 		if (str[index] == '\n')
@@ -58,12 +61,12 @@ int	where_are_you(char *str, int index)
 	return (-1);
 }
 
-char	*ft_strndup(char *str, int size)
+char	*sp_ft_strndup(char *str, int size)
 {
 	char	*cpy;
 	int		i;
 
-	cpy = malloc((size + 1) * sizeof(char));
+	cpy = malloc((size + 1) * sizeof(char) + 1);
 	if (!cpy)
 		return (NULL);
 	i = 0;
@@ -72,7 +75,8 @@ char	*ft_strndup(char *str, int size)
 		cpy[i] = str[i];
 		i++;
 	}
-	cpy[i] = 0;
+	cpy[i] = '\n';
+	cpy[i + 1] = 0;
 	return (cpy);
 }
 
@@ -84,7 +88,7 @@ char	*ft_strdup(const char *s1)
 
 	i = 0;
 	s1_len = ft_strlen(s1);
-	copy = malloc(sizeof(char) * (s1_len + 1));
+	copy = malloc(sizeof(char) * (s1_len + 1) );
 	if (!copy)
 		return (NULL);
 	while (s1[i])
@@ -93,6 +97,27 @@ char	*ft_strdup(const char *s1)
 		i++;
 	}
 	copy[i] = '\0';
+	return (copy);
+}
+
+char	*sp_ft_strdup(const char *s1)
+{
+	size_t	s1_len;
+	char	*copy;
+	int		i;
+
+	i = 0;
+	s1_len = ft_strlen(s1);
+	copy = malloc(sizeof(char) * (s1_len + 1) );
+	if (!copy)
+		return (NULL);
+	while (s1[i])
+	{
+		copy[i] = s1[i];
+		i++;
+	}
+	copy[i] = '\n';
+	copy[i + 1] = '\0';
 	return (copy);
 }
 
@@ -188,33 +213,35 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 char	*get_next_line(int fd)
 {
 	static char		buf[BUFFER_SIZE + 1];
-	static int		index; // l'index de buf tout simplement nique le bonus ouais je le dis NIQUE LE BONUS !!!!
-	int				start;
 	int				r;
+	int				loc;
 	char			*res;
-	char			*tmp;
 
 	if (BUFFER_SIZE < 1 || fd < 0) // cas erreur
 		return (NULL);
-	res = NULL;
-	start = index;
-	while(where_are_you(buf, index) == -1) // tant qu'il n'y a pas de '\n'
+	while(where_are_you(buf) == -1) // tant qu'il n'y a pas de '\n'
 	{
-		r = read(fd, buf, BUFFER_SIZE);
+		r = read(fd, buf, BUFFER_SIZE); // lecture de fd
 		if (r == 0)
+		{
+			res = ft_strdup(buf);
 			return(res);
+		}
 		if (r < 0)
 			return (NULL);
 		buf[r] = 0;
-		if (where_are_you(buf, index) == -1)
-		{
-			tmp = res;
-			res = ft_strjoin(res, buf);
-			free(tmp);
-		}
-		
 	}
-	
+	// \n trouvé !
+	loc = where_are_you(buf);
+	res = sp_ft_strndup(buf, loc); // securisation de ce que je vais renvoyer
+	if (buf[loc + 1]) // si il y a quelques chose apres le '\n'
+	{
+		buf[loc] = 0; // '\0' a lemplacement de l'ancien de '\n'
+		get_back(buf);
+		return(res);
+	}
+	get_zeroed(buf);
+	return (res);
 }
 
 int	main(void)
