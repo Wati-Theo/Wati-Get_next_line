@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tschlege <tschlege@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: Wati-Theo <wati-theo@protonmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:11:23 by tschlege          #+#    #+#             */
-/*   Updated: 2022/03/03 14:42:15 by tschlege         ###   ########lyon.fr   */
+/*   Updated: 2022/03/09 02:10:14 by Wati-Theo        ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,16 +47,13 @@ size_t	ft_strlen(const	char *s)
 	return (i);
 }
 
-int	where_are_you(char *str)
+int	where_are_you(char *str, int index)
 {
-	int	i;
-
-	i = 0;
-	while (str[i])
+	while (str[index])
 	{
-		if (str[i] == '\n')
-			return (i);
-		i++;
+		if (str[index] == '\n')
+			return (index);
+		index++;
 	}
 	return (-1);
 }
@@ -159,25 +156,63 @@ void	get_back(char *buf)
 	
 }
 
+char	*ft_substr(char const *s, unsigned int start, size_t len)
+{
+	size_t	s_len;
+	char	*the_nouvelle;
+	size_t	i;
+
+	if (!s)
+		return (NULL);
+	s_len = ft_strlen(s);
+	i = 0;
+	if (start > s_len)
+		return (ft_calloc(1, sizeof(char)));
+	if ((s_len - start) > len)
+		the_nouvelle = ft_calloc((len + 1), sizeof(char));
+	else
+	{
+		the_nouvelle = ft_calloc((s_len - start + 1), sizeof(char));
+		len = s_len - start + 1;
+	}
+	if (!the_nouvelle)
+		return (NULL);
+	while (s[start + i] && i < len)
+	{
+		the_nouvelle[i] = s[start + i];
+		i++;
+	}
+	return (the_nouvelle);
+}
+
 char	*get_next_line(int fd)
 {
 	static char		buf[BUFFER_SIZE + 1];
+	static int		index; // l'index de buf tout simplement nique le bonus ouais je le dis NIQUE LE BONUS !!!!
+	int				start;
 	int				r;
-	int				check;
 	char			*res;
-	
-	buf[BUFFER_SIZE]  = 0; // \0  a la fin du tab
-	if (!buf) // si le buf est vide
-		if (read(fd, buf, BUFFER_SIZE) <= 0) // si read a une erreur ou on ne lit rien
-			return (NULL);
-	if (where_are_you(buf)) // si il trouve directement le \n
+	char			*tmp;
+
+	if (BUFFER_SIZE < 1 || fd < 0) // cas erreur
+		return (NULL);
+	res = NULL;
+	start = index;
+	while(where_are_you(buf, index) == -1) // tant qu'il n'y a pas de '\n'
 	{
-		blocker(res);
-		if ya quelque chose apres le \n dans buf
-			get_back(buf);
-		else
-			get_zeroed(buf); // remplis le buf de \0 jsqu'a BUFFER_SIZE
-		return (res);
+		r = read(fd, buf, BUFFER_SIZE);
+		if (r == 0)
+			return(res);
+		if (r < 0)
+			return (NULL);
+		buf[r] = 0;
+		if (where_are_you(buf, index) == -1)
+		{
+			tmp = res;
+			res = ft_strjoin(res, buf);
+			free(tmp);
+		}
+		
 	}
 	
 }
