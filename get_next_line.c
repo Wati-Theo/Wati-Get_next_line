@@ -6,11 +6,44 @@
 /*   By: tschlege <tschlege@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:11:23 by tschlege          #+#    #+#             */
-/*   Updated: 2022/03/15 11:25:57 by tschlege         ###   ########lyon.fr   */
+/*   Updated: 2022/03/15 11:46:14 by tschlege         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+
+void	*ft_memset(void *b, int c, size_t len)
+{
+	void	*retturn;
+
+	retturn = b;
+	while (len)
+	{
+		len--;
+		*((unsigned char *)b + len) = (unsigned char)c;
+	}
+	return (retturn);
+}
+
+void	*ft_calloc(size_t count, size_t size)
+{
+	void	*retturn;
+
+	retturn = malloc(count * size);
+	if (!retturn)
+		return (NULL);
+	return (ft_memset(retturn, '\0', count * size));
+}
+
+size_t	ft_strlen(const	char *s)
+{
+	int	i;
+
+	i = 0;
+	while (s[i])
+		i++;
+	return (i);
+}
 
 char	*raciste(char *res, char *buf)
 {
@@ -28,7 +61,7 @@ char	*raciste(char *res, char *buf)
 		get_back(buf);
 		return (res);
 	}
-	get_zeroed(buf);
+	ft_memset(buf, 0, ft_strlen(buf));
 	return (res);
 }
 
