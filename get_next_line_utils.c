@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Wati-Theo <wati-theo@protonmail.com>       +#+  +:+       +#+        */
+/*   By: tschlege <tschlege@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/11 16:42:51 by Wati-Theo         #+#    #+#             */
-/*   Updated: 2022/03/11 16:49:44 by Wati-Theo        ###   ########lyon.fr   */
+/*   Updated: 2022/03/14 14:13:51 by tschlege         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,6 +144,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	while (s2[i])
 		the_nouvelle[j++] = s2[i++];
 	the_nouvelle[j] = '\0';
+	free((void *)s1);
 	return (the_nouvelle);
 }
 
