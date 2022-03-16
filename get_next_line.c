@@ -6,7 +6,7 @@
 /*   By: tschlege <tschlege@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:11:23 by tschlege          #+#    #+#             */
-/*   Updated: 2022/03/15 11:46:14 by tschlege         ###   ########lyon.fr   */
+/*   Updated: 2022/03/16 11:34:24 by tschlege         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ size_t	ft_strlen(const	char *s)
 	return (i);
 }
 
-char	*raciste(char *res, char *buf)
+char	*reducteur(char *res, char *buf)
 {
 	int		loc;
 	char	*tmp;
@@ -79,7 +79,7 @@ char	*get_next_line(int fd)
 	while (r > 0)
 	{
 		if (where_are_you(buf) > -1)
-			return (raciste(res, buf));
+			return (reducteur(res, buf));
 		else
 		{
 			res = ft_strjoin(res, buf);
